@@ -6,15 +6,17 @@ import plotly.express as px
 # ----------------------------------------------------------
 # Título
 # ----------------------------------------------------------
-st.title("Dashboard interactivo: Odómetro y Histograma con Plotly")
+st.title("Dashboard interactivo: Odómetro, Histograma y Dispersión")
 
 # ----------------------------------------------------------
 # Cargar datos
 # ----------------------------------------------------------
 df = pd.read_csv("vehicles_us.csv")
 
-# Asegúrate de que la columna sea correcta
-col = "odometer"
+# Columnas a usar
+col_odometer = "odometer"
+col_price = "price"       # cámbiala si tu dataset usa otro nombre
+col_fuel = "fuel"         # si no existe esta columna, puedes borrar 'color' en el scatter
 
 st.subheader("Vista previa de los datos")
 st.write(df.head())
@@ -24,10 +26,9 @@ st.write(df.head())
 # ----------------------------------------------------------
 st.sidebar.header("Filtros del odómetro")
 
-min_value = int(df[col].min())
-max_value = int(df[col].max())
+min_value = int(df[col_odometer].min())
+max_value = int(df[col_odometer].max())
 
-# Slider interactivo
 rango = st.sidebar.slider(
     "Selecciona el rango del odómetro",
     min_value=min_value,
@@ -35,8 +36,7 @@ rango = st.sidebar.slider(
     value=(min_value, max_value)
 )
 
-# Filtrar datos según el slider
-df_filtrado = df[(df[col] >= rango[0]) & (df[col] <= rango[1])]
+df_filtrado = df[(df[col_odometer] >= rango[0]) & (df[col_odometer] <= rango[1])]
 
 st.write(f"Mostrando {len(df_filtrado)} vehículos en el rango seleccionado.")
 
@@ -45,7 +45,7 @@ st.write(f"Mostrando {len(df_filtrado)} vehículos en el rango seleccionado.")
 # ----------------------------------------------------------
 st.subheader("Odómetro promedio")
 
-valor_promedio = df_filtrado[col].mean()
+valor_promedio = df_filtrado[col_odometer].mean()
 
 fig_gauge = go.Figure(
     go.Indicator(
@@ -56,9 +56,9 @@ fig_gauge = go.Figure(
             'axis': {'range': [0, max_value]},
             'bar': {'color': "blue"},
             'steps': [
-                {'range': [0, df[col].quantile(0.33)], 'color': "#cce6ff"},
-                {'range': [df[col].quantile(0.33), df[col].quantile(0.66)], 'color': "#99ccff"},
-                {'range': [df[col].quantile(0.66), max_value], 'color': "#66b3ff"}
+                {'range': [0, df[col_odometer].quantile(0.33)], 'color': "#cce6ff"},
+                {'range': [df[col_odometer].quantile(0.33), df[col_odometer].quantile(0.66)], 'color': "#99ccff"},
+                {'range': [df[col_odometer].quantile(0.66), max_value], 'color': "#66b3ff"}
             ]
         }
     )
@@ -67,21 +67,41 @@ fig_gauge = go.Figure(
 st.plotly_chart(fig_gauge)
 
 # ----------------------------------------------------------
-# 2. Histograma interactivo
+# 2. Histograma
 # ----------------------------------------------------------
-st.subheader("Histograma del odómetro")
+hist_button = st.button('Construir Histograma')
 
-fig_hist = px.histogram(
+if hist_button:
+    st.subheader("Histograma del odómetro")
+    
+    fig_hist = px.histogram(
     df_filtrado,
-    x=col,
+    x=col_odometer,
     nbins=40,
-    title="Histograma del odómetro filtrado",
-    labels={col: "Odómetro (millas)"}
-)
-
-st.plotly_chart(fig_hist)
+    title="Histograma del odómetro (filtrado)",
+    labels={col_odometer: "Odómetro (millas)"}) 
+    
+    st.plotly_chart(fig_hist)
 
 # ----------------------------------------------------------
-# Fin
+# 3. Gráfico de dispersión (scatter plot)
 # ----------------------------------------------------------
-st.write("Dashboard interactivo completado ✔")
+disp_button = st.button('Construir Grafico de dispersion')
+
+if hist_button:
+    st.subheader("Gráfico de dispersión: Odómetro vs Precio")
+    
+    fig_scatter = px.scatter(
+    df_filtrado,
+    x=col_odometer,
+    y=col_price,
+    color=col_fuel if col_fuel in df.columns else None,
+    title="Dispersión entre Odómetro y Precio",
+    labels={
+        col_odometer: "Odómetro (millas)",
+        col_price: "Precio ($)"
+    },
+    opacity=0.7)
+    fig_scatter.update_traces(marker=dict(size=6))
+    st.plotly_chart(fig_scatter)
+
