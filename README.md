@@ -1,1 +1,6 @@
-# new_proyect
+Lo que acabamos de presentar es un dashboard interactivo desarrollado con Streamlit y Plotly, con el fin de analizar los datos del documento vehicles_us.csv.
+Con el objetivo principal es permitirnos explorar de manera visual y dinamica la informacion relacionada con los vehiculos usados, enfocandonos en el odometro, el precio entre otras.
+En la barra lateral, el usuario puede ajustar un slider que permite filtrrar los vehiculos segun su trango especifico de valores del odometro. Con la finalidad de analizar segmentos especificos del mercado.
+En el primer grafico integramos un medidor interactivo que calcula y visualiza el promedio del odometro dentro del rando seleccionado. El cual nos facilitara una vision rapida del uso de los vehiculos filtrados.
+Podemos encontrar tambien un histograma interactivo que muestra la distribucion de los valores del odometro, los cuales permiten identificar, la concentracion de vehiculos segun su kilometraje. Este histograma se actualiza automaticamente en funcion del filtro elegido.
+Tambien integramos un grafico de dispersion que se relaciona tambien con el odometro y el precio del vehiculo. Cada punto representa un auto, los putos de datos se colorean segun el tipo de combistible, lo que nos permite hacer una comparacion en como influye el kilometraje en el precio y las diferencias entre los tipos de combuistibles. Este grafico nos permite detectar patrones como depreciacion, outliers o comportamientos por categoria. 
